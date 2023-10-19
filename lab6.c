@@ -4,23 +4,29 @@
 int StepPins[4]={40,38,36,37};
 int WaitTime=10;
 void toright(int degree) {
-	int stepcounter=0;
-	int steps=(degree/0.175);
-	printf ("steps: %i\n", steps);
-	while (stepcounter<=steps) {
+	int stepcounter=0; //счетчик (типа текущее положение грубо говоря, и от него мы будем 
+	// бежать к введенному положению)
+	int steps=(degree/0.175); //делим введеный угол на угол шага, чтобы получить 
+	//требуемое кол-во шагов, которое нужно пройти
+	printf ("steps: %i\n", steps); // выводим шаг ВВЕДЕННЫЙ
+	while (stepcounter<=steps) { // работаем пока текущий шаг не стал равен введенному шагу
+		//устанавливаем состояние пинов управления
 		digitalWrite(StepPins[(stepcounter-1)%4],0);
 		digitalWrite(StepPins[(stepcounter)%4],1);
 		digitalWrite(StepPins[(stepcounter+1)%4],0);
 		
-		printf ("step %d\n", stepcounter);
-		stepcounter++;
-		delay(WaitTime);
+		printf ("step %d\n", stepcounter); //здесь уже выводим ТЕКУЩИЙ шаг
+		stepcounter++; //повышаем счетчик на 1 после пройденного шага
+		delay(WaitTime); //задержка 10мс
 	}
 }
 void toleft(int degree) {
-	int stepcounter=(degree/0.175);
-	int steps=0;
-	while (stepcounter>=steps) {
+	int stepcounter=(degree/0.175); // делим введеный угол на угол шага, чтобы получить 
+	//требуемое кол-во шагов, которое нужно пройти
+	int steps=0; // счетчик 
+	while (stepcounter>=steps) { //работаем, пока нужное кол-во шагов >= 0
+		// в итоге мы пройдем (при degree = 512) 512 шагов влево
+		//с каждым пройденным шагом мы будем уменьшать остаток еще не пройденных шагов
 		digitalWrite(StepPins[(stepcounter-1)%4],0);
 		digitalWrite(StepPins[(stepcounter)%4],1);
 		digitalWrite(StepPins[(stepcounter+1)%4],0);
@@ -31,17 +37,17 @@ void toleft(int degree) {
 	}
 }
 int main() {
-	if (wiringPiSetupPhys()==-1) return 0;
-	pinMode(StepPins[0], OUTPUT);
+	if (wiringPiSetupPhys()==-1) return 0; //опрос устройств поделкдюченных
+	pinMode(StepPins[0], OUTPUT); //стандарт просто делаем пинмод
 	pinMode(StepPins[1], OUTPUT);
 	pinMode(StepPins[2], OUTPUT);
 	pinMode(StepPins[3], OUTPUT);
 	int spinto, degree;
 	while (1) {
 		scanf("%i%i", &spinto, &degree);
-		if (spinto==0) {
+		if (spinto==0) { //если идем вправо
 			toright(degree);
-		} else if (spinto==1) {
+		} else if (spinto==1) { // если идем влево
 			toleft(degree);
 		} else {break;}
 	}
